@@ -1,190 +1,180 @@
-// 問題の追加・修正は、この配列内の項目を編集してください。
-// answer は ○なら true、×なら false です。
-const questions = [
-  {
-    category: "用語の定義",
-    question: "建築基準法上の「建築」には、建築物の新築、増築、改築、移転が含まれる。",
-    answer: true,
-    explanation: "「建築」とは、建築物を新築し、増築し、改築し、または移転することをいいます。",
-    reference: "建築基準法 第2条第13号"
-  },
-  {
-    category: "用語の定義",
-    question: "建築物の用途を変更することは、建築基準法上の「建築」に含まれる。",
-    answer: false,
-    explanation: "用途変更は「建築」の定義には含まれません。ただし、用途や規模によって確認申請などの手続が必要になる場合があります。",
-    reference: "建築基準法 第2条第13号・第87条"
-  },
-  {
-    category: "単体規定",
-    question: "居室には、原則として採光のための窓その他の開口部を設けなければならない。",
-    answer: true,
-    explanation: "住宅、学校、病院、診療所、寄宿舎などの居室には、原則として採光に有効な開口部が必要です。用途に応じた例外や必要割合があります。",
-    reference: "建築基準法 第28条第1項"
-  },
-  {
-    category: "道路・敷地",
-    question: "建築物の敷地は、原則として建築基準法上の道路に2m以上接しなければならない。",
-    answer: true,
-    explanation: "いわゆる接道義務です。地方公共団体の条例による付加や、一定の認定・許可による例外があります。",
-    reference: "建築基準法 第43条第1項・第2項"
-  },
-  {
-    category: "道路・敷地",
-    question: "建築基準法上の「道路」とは、幅員が必ず4m以上あるものだけをいう。",
-    answer: false,
-    explanation: "原則は幅員4m以上ですが、法第42条第2項の規定により、基準時に建築物が立ち並ぶ幅員4m未満の道が指定を受けて道路とみなされる場合があります。",
-    reference: "建築基準法 第42条第1項・第2項"
-  },
-  {
-    category: "用途地域",
-    question: "用途地域内では、建築物の用途制限は全国一律で、地方公共団体の条例により制限を緩和または強化することはできない。",
-    answer: false,
-    explanation: "用途地域ごとの基本的な制限に加え、特別用途地区では条例により制限を強化でき、国土交通大臣の承認を得て緩和できる場合もあります。",
-    reference: "建築基準法 第49条"
-  },
-  {
-    category: "防火・避難",
-    question: "防火地域内にある階数3以上の建築物は、原則として耐火建築物等としなければならない。",
-    answer: true,
-    explanation: "防火地域では、階数が3以上、または延べ面積が100㎡を超える建築物は、原則として耐火建築物等とする必要があります。",
-    reference: "建築基準法 第61条、建築基準法施行令 第136条の2"
-  },
-  {
-    category: "構造強度",
-    question: "建築物は、自重、積載荷重、積雪荷重、風圧、土圧・水圧、地震などに対して安全な構造でなければならない。",
-    answer: true,
-    explanation: "建築物には、通常時の荷重・外力だけでなく、積雪、風、地震などに対する構造上の安全性が求められます。",
-    reference: "建築基準法 第20条"
-  },
-  {
-    category: "建築確認",
-    question: "確認済証の交付を受けた建築物であれば、工事完了後の検査申請は一切不要である。",
-    answer: false,
-    explanation: "確認済証は着工前の計画確認です。確認を受けた建築物の工事が完了したときは、原則として完了検査の申請が必要です。",
-    reference: "建築基準法 第7条"
-  },
-  {
-    category: "維持保全",
-    question: "建築物の所有者、管理者または占有者は、その建築物の敷地、構造および建築設備を常時適法な状態に維持するよう努めなければならない。",
-    answer: true,
-    explanation: "建築物だけでなく、その敷地・構造・建築設備についても、常時適法な状態を維持する努力義務が定められています。",
-    reference: "建築基準法 第8条第1項"
-  }
-];
+const YEAR = "2025";
+const STORAGE_KEY = "nikyu-tekihan-history-v2";
+const exam = window.EXAM_DATA.years[YEAR];
+const questions = exam.questions;
 
-const elements = {
-  score: document.querySelector("#score"),
-  progressText: document.querySelector("#progress-text"),
-  progressBar: document.querySelector("#progress-bar"),
-  category: document.querySelector("#category"),
-  questionNumber: document.querySelector("#question-number"),
-  questionText: document.querySelector("#question-text"),
-  answerButtons: document.querySelector("#answer-buttons"),
-  feedback: document.querySelector("#feedback"),
-  resultIcon: document.querySelector("#result-icon"),
-  resultText: document.querySelector("#result-text"),
-  correctAnswer: document.querySelector("#correct-answer"),
-  explanationText: document.querySelector("#explanation-text"),
-  referenceText: document.querySelector("#reference-text"),
-  nextButton: document.querySelector("#next-button"),
-  quizCard: document.querySelector("#quiz-card"),
-  completion: document.querySelector("#completion"),
-  finalScore: document.querySelector("#final-score"),
-  finalMessage: document.querySelector("#final-message"),
-  restartButton: document.querySelector("#restart-button")
-};
+const elements = Object.fromEntries([
+  "score", "accuracy", "answered-count", "progress-text", "progress-bar", "category",
+  "question-number", "question-text", "answer-buttons", "answer-state", "feedback",
+  "result-icon", "result-text", "correct-answer", "explanation-text", "reference-text",
+  "previous-button", "next-button", "quiz-card", "completion", "final-score",
+  "restart-button", "reset-button", "mode-note", "empty-state", "empty-all-button"
+].map((id) => [id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()), document.querySelector(`#${id}`)]));
+elements.modeButtons = [...document.querySelectorAll(".mode-button")];
 
+let history = loadHistory();
+let mode = "all";
+let session = [];
 let currentIndex = 0;
-let score = 0;
-let answered = false;
+let sessionAnswers = {};
+
+function blankHistory() {
+  return { answers: {}, wrong: [], updatedAt: null };
+}
+
+function loadHistory() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return saved && saved.answers && Array.isArray(saved.wrong) ? saved : blankHistory();
+  } catch {
+    return blankHistory();
+  }
+}
+
+function saveHistory() {
+  history.updatedAt = new Date().toISOString();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
+function keyFor(question) {
+  return `${YEAR}-${question.number}`;
+}
+
+function shuffle(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function startMode(nextMode, preserveOrder = false) {
+  mode = nextMode;
+  const wrongSet = new Set(history.wrong);
+  session = mode === "wrong"
+    ? questions.filter((q) => wrongSet.has(keyFor(q)))
+    : mode === "random" ? shuffle(questions) : [...questions];
+  if (preserveOrder && mode === "random") session = shuffle(questions);
+  currentIndex = 0;
+  sessionAnswers = {};
+
+  elements.modeButtons.forEach((button) => {
+    const active = button.dataset.mode === mode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  elements.modeNote.textContent = mode === "all"
+    ? "第1問から順番に出題します。"
+    : mode === "random"
+      ? "全50問をランダムな順番で出題します。"
+      : `保存された誤答 ${session.length}問を出題します。`;
+
+  elements.completion.hidden = true;
+  const empty = session.length === 0;
+  elements.quizCard.hidden = empty;
+  elements.emptyState.hidden = !empty;
+  updateStats();
+  if (!empty) showQuestion();
+}
 
 function showQuestion() {
-  const item = questions[currentIndex];
-  answered = false;
-  elements.category.textContent = item.category;
-  elements.questionNumber.textContent = `QUESTION ${String(currentIndex + 1).padStart(2, "0")}`;
-  elements.questionText.textContent = item.question;
-  elements.progressText.textContent = `${currentIndex + 1} / ${questions.length}`;
-  elements.progressBar.style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
-  elements.feedback.hidden = true;
-  elements.feedback.className = "feedback";
+  const item = session[currentIndex];
+  const record = sessionAnswers[keyFor(item)];
+  elements.category.textContent = item.field;
+  elements.questionNumber.textContent = `${exam.label} No.${item.number}`;
+  elements.questionText.textContent = item.text;
+  elements.progressText.textContent = `${currentIndex + 1} / ${session.length}`;
+  elements.progressBar.style.width = `${((currentIndex + 1) / session.length) * 100}%`;
+  elements.previousButton.disabled = currentIndex === 0;
+  elements.nextButton.textContent = currentIndex === session.length - 1 ? "結果を見る →" : "次の問題 →";
 
-  elements.answerButtons.querySelectorAll("button").forEach((button) => {
-    button.disabled = false;
+  const buttons = [...elements.answerButtons.querySelectorAll("button")];
+  buttons.forEach((button) => {
+    button.disabled = Boolean(record);
     button.classList.remove("selected");
+    if (record && String(record.selected) === button.dataset.answer) button.classList.add("selected");
   });
+
+  if (record) showFeedback(item, record);
+  else {
+    elements.answerState.textContent = "未回答";
+    elements.answerState.className = "answer-state";
+    elements.feedback.hidden = true;
+    elements.feedback.className = "feedback";
+  }
 }
 
 function submitAnswer(event) {
-  if (answered) return;
-  answered = true;
-
-  const selectedButton = event.currentTarget;
-  const selectedAnswer = selectedButton.dataset.answer === "true";
-  const item = questions[currentIndex];
-  const isCorrect = selectedAnswer === item.answer;
-
-  if (isCorrect) {
-    score += 1;
-    elements.score.textContent = score;
-  }
-
-  elements.answerButtons.querySelectorAll("button").forEach((button) => {
-    button.disabled = true;
-  });
-  selectedButton.classList.add("selected");
-
-  elements.feedback.classList.add(isCorrect ? "correct" : "incorrect");
-  elements.resultIcon.textContent = isCorrect ? "✓" : "!";
-  elements.resultText.textContent = isCorrect ? "正解です" : "不正解です";
-  elements.correctAnswer.textContent = `正解は「${item.answer ? "○" : "×"}」`;
-  elements.explanationText.textContent = item.explanation;
-  elements.referenceText.textContent = `根拠：${item.reference}`;
-  elements.nextButton.innerHTML = currentIndex === questions.length - 1
-    ? "結果を見る <span aria-hidden=\"true\">→</span>"
-    : "次の問題 <span aria-hidden=\"true\">→</span>";
-  elements.feedback.hidden = false;
-  elements.nextButton.focus({ preventScroll: true });
+  const item = session[currentIndex];
+  const key = keyFor(item);
+  if (sessionAnswers[key]) return;
+  const selected = event.currentTarget.dataset.answer === "true";
+  const correct = selected === item.answer;
+  const record = { selected, correct, answeredAt: new Date().toISOString() };
+  sessionAnswers[key] = record;
+  history.answers[key] = record;
+  if (!correct && !history.wrong.includes(key)) history.wrong.push(key);
+  saveHistory();
+  showQuestion();
+  updateStats();
 }
 
-function nextQuestion() {
-  currentIndex += 1;
-  if (currentIndex < questions.length) {
-    showQuestion();
-    elements.quizCard.scrollIntoView({ behavior: "smooth", block: "start" });
+function showFeedback(item, record) {
+  elements.answerState.textContent = record.correct ? "正解" : "不正解";
+  elements.answerState.className = `answer-state ${record.correct ? "correct" : "incorrect"}`;
+  elements.feedback.className = `feedback ${record.correct ? "correct" : "incorrect"}`;
+  elements.resultIcon.textContent = record.correct ? "✓" : "!";
+  elements.resultText.textContent = record.correct ? "正解です" : "不正解です";
+  elements.correctAnswer.textContent = `あなたの回答：${record.selected ? "正" : "誤"} ／ 正解：${item.answer ? "正" : "誤"}`;
+  elements.explanationText.textContent = item.explanation;
+  elements.referenceText.textContent = `根拠法令：${item.law}`;
+  elements.feedback.hidden = false;
+}
+
+function updateStats() {
+  const records = Object.values(history.answers);
+  const correct = records.filter((record) => record.correct).length;
+  elements.score.textContent = String(correct);
+  elements.accuracy.textContent = records.length ? `${Math.round(correct / records.length * 100)}%` : "--";
+  elements.answeredCount.textContent = `${records.length} / ${questions.length}`;
+}
+
+function move(step) {
+  const nextIndex = currentIndex + step;
+  if (nextIndex < 0) return;
+  if (nextIndex >= session.length) {
+    showCompletion();
     return;
   }
-  showCompletion();
+  currentIndex = nextIndex;
+  showQuestion();
+  elements.quizCard.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function showCompletion() {
+  const sessionRecords = session.map((q) => sessionAnswers[keyFor(q)]).filter(Boolean);
+  const correct = sessionRecords.filter((record) => record.correct).length;
+  const rate = sessionRecords.length ? Math.round(correct / sessionRecords.length * 100) : 0;
   elements.quizCard.hidden = true;
   elements.completion.hidden = false;
-  elements.finalScore.textContent = score;
-  const rate = score / questions.length;
-  elements.finalMessage.textContent = rate === 1
-    ? "全問正解です。確かな理解が身についています。"
-    : rate >= 0.7
-      ? "よくできました。解説を振り返って、さらに理解を固めましょう。"
-      : "もう一度挑戦して、条文のポイントを押さえましょう。";
+  elements.finalScore.textContent = `${sessionRecords.length}問回答・${correct}問正解（正答率 ${rate}%）`;
   elements.completion.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
-function restartQuiz() {
-  currentIndex = 0;
-  score = 0;
-  elements.score.textContent = "0";
-  elements.completion.hidden = true;
-  elements.quizCard.hidden = false;
-  showQuestion();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+function resetHistory() {
+  if (!window.confirm("端末に保存した回答履歴と間違いリストをすべて削除しますか？")) return;
+  history = blankHistory();
+  localStorage.removeItem(STORAGE_KEY);
+  startMode(mode);
 }
 
-elements.answerButtons.querySelectorAll("button").forEach((button) => {
-  button.addEventListener("click", submitAnswer);
-});
-elements.nextButton.addEventListener("click", nextQuestion);
-elements.restartButton.addEventListener("click", restartQuiz);
+elements.answerButtons.querySelectorAll("button").forEach((button) => button.addEventListener("click", submitAnswer));
+elements.previousButton.addEventListener("click", () => move(-1));
+elements.nextButton.addEventListener("click", () => move(1));
+elements.restartButton.addEventListener("click", () => startMode(mode, true));
+elements.resetButton.addEventListener("click", resetHistory);
+elements.emptyAllButton.addEventListener("click", () => startMode("all"));
+elements.modeButtons.forEach((button) => button.addEventListener("click", () => startMode(button.dataset.mode)));
 
-showQuestion();
+startMode("all");

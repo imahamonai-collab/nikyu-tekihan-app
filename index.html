@@ -4,76 +4,69 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f4f1e9">
-  <meta name="description" content="二級建築基準適合判定資格者向け 建築基準法○×学習アプリ">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="二級適判">
+  <meta name="description" content="令和7年二級建築基準適合判定資格者検定 考査A 50問学習アプリ">
   <title>二級適判 ○×トレーニング</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="app-shell" aria-labelledby="app-title">
     <header class="app-header">
-      <div>
-        <p class="eyebrow">二級建築基準適合判定資格者</p>
-        <h1 id="app-title">二級適判 ○×トレーニング</h1>
-      </div>
-      <div class="score" aria-live="polite">
-        <span>正解</span>
-        <strong id="score">0</strong>
-      </div>
+      <div><p class="eyebrow">令和7年 考査A・全50問</p><h1 id="app-title">二級適判 ○×トレーニング</h1></div>
+      <button id="reset-button" class="text-button" type="button">履歴リセット</button>
     </header>
 
-    <section class="progress-area" aria-label="学習の進捗">
-      <div class="progress-labels">
-        <span id="category">建築基準法</span>
-        <strong id="progress-text">1 / 10</strong>
+    <section class="mode-panel" aria-label="出題モード">
+      <div class="mode-buttons" role="group" aria-label="出題モードを選択">
+        <button type="button" class="mode-button active" data-mode="all">50問通し</button>
+        <button type="button" class="mode-button" data-mode="random">ランダム</button>
+        <button type="button" class="mode-button" data-mode="wrong">間違いだけ</button>
       </div>
-      <div class="progress-track" aria-hidden="true">
-        <div id="progress-bar" class="progress-bar"></div>
-      </div>
+      <p id="mode-note" class="mode-note">第1問から順番に出題します。</p>
+    </section>
+
+    <section class="stats" aria-label="学習状況">
+      <div><span>正解数</span><strong id="score">0</strong></div>
+      <div><span>正答率</span><strong id="accuracy">--</strong></div>
+      <div><span>回答済み</span><strong id="answered-count">0 / 50</strong></div>
+    </section>
+
+    <section class="progress-area" aria-label="現在のセッションの進捗">
+      <div class="progress-labels"><span id="category">分野</span><strong id="progress-text">1 / 50</strong></div>
+      <div class="progress-track" aria-hidden="true"><div id="progress-bar" class="progress-bar"></div></div>
     </section>
 
     <section id="quiz-card" class="quiz-card">
-      <p class="question-number" id="question-number">QUESTION 01</p>
+      <div class="question-meta"><p class="question-number" id="question-number">令和7年 No.1</p><span id="answer-state" class="answer-state">未回答</span></div>
       <h2 id="question-text" class="question-text"></h2>
-
+      <div class="choice-label">選択肢</div>
       <div id="answer-buttons" class="answer-buttons" aria-label="回答を選択">
-        <button class="answer-button answer-true" type="button" data-answer="true" aria-label="正しい、まる">
-          <span class="symbol" aria-hidden="true">○</span>
-          <span>正しい</span>
-        </button>
-        <button class="answer-button answer-false" type="button" data-answer="false" aria-label="誤り、ばつ">
-          <span class="symbol" aria-hidden="true">×</span>
-          <span>誤り</span>
-        </button>
+        <button class="answer-button answer-true" type="button" data-answer="true" aria-label="正しい、正"><span class="symbol" aria-hidden="true">○</span><span>正</span></button>
+        <button class="answer-button answer-false" type="button" data-answer="false" aria-label="誤り、誤"><span class="symbol" aria-hidden="true">×</span><span>誤</span></button>
       </div>
 
-      <div id="feedback" class="feedback" hidden aria-live="assertive">
-        <div class="result-line">
-          <span id="result-icon" class="result-icon" aria-hidden="true"></span>
-          <div>
-            <p id="result-text" class="result-text"></p>
-            <p id="correct-answer" class="correct-answer"></p>
-          </div>
-        </div>
-        <div class="explanation">
-          <p class="explanation-label">解説</p>
-          <p id="explanation-text"></p>
-          <p id="reference-text" class="reference"></p>
-        </div>
-        <button id="next-button" class="next-button" type="button">次の問題 <span aria-hidden="true">→</span></button>
+      <div id="feedback" class="feedback" hidden aria-live="polite">
+        <div class="result-line"><span id="result-icon" class="result-icon" aria-hidden="true"></span><div><p id="result-text" class="result-text"></p><p id="correct-answer" class="correct-answer"></p></div></div>
+        <div class="explanation"><p class="explanation-label">解説</p><p id="explanation-text"></p><p id="reference-text" class="reference"></p></div>
       </div>
+
+      <nav class="question-nav" aria-label="問題の移動">
+        <button id="previous-button" class="nav-button secondary" type="button">← 前の問題</button>
+        <button id="next-button" class="nav-button primary" type="button">次の問題 →</button>
+      </nav>
     </section>
+
+    <section id="empty-state" class="empty-state" hidden><h2>出題できる問題がありません</h2><p>「間違いだけ」は、一度誤答した問題が保存されると利用できます。</p><button id="empty-all-button" class="nav-button primary" type="button">50問通しを始める</button></section>
 
     <section id="completion" class="completion" hidden aria-live="polite">
-      <p class="completion-mark" aria-hidden="true">✓</p>
-      <p class="eyebrow">10問終了</p>
-      <h2>おつかれさまでした</h2>
-      <p class="final-score"><strong id="final-score">0</strong><span> / 10 正解</span></p>
-      <p id="final-message" class="final-message"></p>
-      <button id="restart-button" class="next-button" type="button">もう一度挑戦</button>
+      <p class="completion-mark" aria-hidden="true">✓</p><p class="eyebrow">セッション終了</p><h2>おつかれさまでした</h2><p id="final-score" class="final-score"></p><button id="restart-button" class="nav-button primary" type="button">同じモードでもう一度</button>
     </section>
 
-    <footer>学習用サンプルです。実務では最新の法令・告示をご確認ください。</footer>
+    <footer><p>出典：国土交通省「令和7年二級建築基準適合判定資格者検定 考査A」</p><p>法令は出題時点のものです。実務では最新法令をご確認ください。</p></footer>
   </main>
+  <script src="questions-r7.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
